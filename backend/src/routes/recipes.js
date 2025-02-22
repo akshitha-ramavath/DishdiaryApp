@@ -84,11 +84,17 @@ router.get("/savedRecipes/ids/:userId", async (req, res) => {
 router.get("/savedRecipes/:userId", async (req, res) => {
   try {
     const user = await UserModel.findById(req.params.userId);
+    if (!user || !user.savedRecipes || user.savedRecipes.length === 0) {
+      return res.status(200).json({ savedRecipes: [] });
+    }
+    
     const savedRecipes = await RecipesModel.find({
       _id: { $in: user.savedRecipes },
     });
 
-    console.log(savedRecipes);
+
+    console.log("Fetched saved recipes:", savedRecipes);
+
     res.status(201).json({ savedRecipes });
   } catch (err) {
     console.log(err);
